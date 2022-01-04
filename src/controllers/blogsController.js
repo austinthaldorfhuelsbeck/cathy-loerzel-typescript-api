@@ -30,6 +30,36 @@ async function isValidBlog(req, res, next) {
   res.locals.blog = blog;
   return next();
 }
+/**
+ * blogExists:
+ *   Looks up blog according to param or request body
+ *   Passes the blog thru res.locals if found
+ *   Otherwise returns error message with 404 status
+ */
+async function blogExists(req, res, next) {
+  // Locate ID from param or request body
+  let id = "";
+  if (req.params.blog_id) {
+    id = req.params.blog_id;
+  } else if (req.body.data.blog_id) {
+    id = req.body.data.blog_id;
+  }
+
+  // Read the appropriate blog,
+  // then take the first item of the list returned
+  const blogsList = await service.read(id);
+  const blog = blogsList[0];
+
+  // Return the blog if found, or return 404 message
+  if (blog) {
+    res.locals.blog = blog;
+    return next();
+  }
+  next({
+    status: 404,
+    message: `Blog ${req.params.blog_id} cannot be found.`,
+  })
+}
 
 //// !--- APPEND for create requests with incomplete blog object ---! ////
 
@@ -69,9 +99,9 @@ async function appendData(req, res, next) {
 
 /**
  * List:
- *   @return array of all blog objects if no query provided
- *   @return array of all blog objects matching category if category query
- *   @return array of all blog objects matching topic if topic query
+ *   @returns array of all blog objects if no query provided
+ *   @returns array of all blog objects matching category if category query
+ *   @returns array of all blog objects matching topic if topic query
 */
 async function list(req, res) {
   // Identify queries, if any
@@ -94,7 +124,7 @@ async function list(req, res) {
 }
 /**
  * List Featured:
- *   @return array of all blog objects which are featured
+ *   @returns array of all blog objects which are featured
  */
 async function listFeatured(req, res) {
   let data = await service.listFeatured();
@@ -103,7 +133,7 @@ async function listFeatured(req, res) {
 
 /**
  * Create:
- *   @return HTTP status 201 + the created blog object
+ *   @returns HTTP status 201 + the created blog object
  */
 async function create(req, res) {
   // Locate validated blog object
@@ -116,9 +146,22 @@ async function create(req, res) {
   res.status(201).json({ data });
 }
 
+/**
+ * Read:
+ *   @returns found blog object, if it exists
+ */
+function read(req, res) {
+  // Locate validated blog object
+  const data = res.locals.blog;
+
+  // Pass thru data
+  res.json({ data })
+}
+
 // Export modules
 module.exports = {
   list: [asyncErrorBoundary(list)],
   listFeatured: [asyncErrorBoundary(listFeatured)],
-  create: [asyncErrorBoundary(isValidBlog), appendData, create]
+  create: [asyncErrorBoundary(isValidBlog), appendData, create],
+  read: [asyncErrorBoundary(blogExists), read]
 }

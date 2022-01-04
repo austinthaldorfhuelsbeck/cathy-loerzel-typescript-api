@@ -15,6 +15,10 @@ router
   .route('/featured')
   .get(controller.listFeatured)
   .all(methodNotAllowed);
+router
+  .route('/:blog_id')
+  .get(controller.read)
+  .all(methodNotAllowed);
 
 // Export module
 module.exports = router

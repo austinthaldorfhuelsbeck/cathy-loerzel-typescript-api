@@ -59,11 +59,21 @@ function create(blog) {
     .then((createdBlogs) => createdBlogs[0])
 }
 
+/**
+ * Read:
+ *   @input blog ID
+ *   @return array of blogs with given ID
+ */
+function read(id) {
+  return knex("blogs as b").select("*").where({ "b.blog_id": id });
+}
+
 // Export modules
 module.exports = {
   list,
   listCategory,
   listTopic,
   listFeatured,
-  create
+  create,
+  read
 }
