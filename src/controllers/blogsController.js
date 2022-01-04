@@ -7,13 +7,13 @@ const asyncErrorBoundary = require('../errors/asyncErrorBoundary');
 
 /**
  * isValidBlog:
- *   Utilized alongside create method,
+ *   Utilized alongside create and update methods,
  *   where blog is passed as the request body.
  *   Blogs require a title, category, text, and img
  *   Builds a custom error message and returns with 400 status
  */
 async function isValidBlog(req, res, next) {
-  // Acquire blog from body of create request
+  // Acquire blog from body of create/update request
   const blog = { ...req.body };
 
   // Build custom error message
@@ -27,7 +27,7 @@ async function isValidBlog(req, res, next) {
   if (message !== "") {
     return next({ status: 400, message });
   }
-  res.locals.blog = blog;
+  res.locals.validBlog = blog;
   return next();
 }
 /**
@@ -46,13 +46,13 @@ async function blogExists(req, res, next) {
   }
 
   // Read the appropriate blog,
-  // then take the first item of the list returned
+  // then take the first item of the list
   const blogsList = await service.read(id);
   const blog = blogsList[0];
 
   // Return the blog if found, or return 404 message
   if (blog) {
-    res.locals.blog = blog;
+    res.locals.foundBlog = blog;
     return next();
   }
   next({
@@ -70,7 +70,7 @@ async function blogExists(req, res, next) {
  */
 async function appendData(req, res, next) {
   // Acquire blog object from res.locals
-  const { blog } = res.locals;
+  const blog = res.locals.validBlog;
 
   // Append an ID created from title if no ID provided
   if (!blog.blog_id) {
@@ -91,7 +91,7 @@ async function appendData(req, res, next) {
   }
 
   // Pass thru completed blog object
-  res.locals.blog = blog;
+  res.locals.validBlog = blog;
   return next();
 }
 
@@ -137,7 +137,7 @@ async function listFeatured(req, res) {
  */
 async function create(req, res) {
   // Locate validated blog object
-  const { blog } = res.locals;
+  const blog = res.locals.validBlog;
 
   // Create blog entry utilizing service
   const data = await service.create(blog);
@@ -152,10 +152,29 @@ async function create(req, res) {
  */
 function read(req, res) {
   // Locate validated blog object
-  const data = res.locals.blog;
+  const data = res.locals.foundBlog;
 
   // Pass thru data
   res.json({ data })
+}
+
+/**
+ * Update:
+ *   @returns updated blog object
+ */
+ async function update(req, res) {
+  const data = await service.update(res.locals.validBlog, res.locals.foundBlog.blog_id);
+  res.json({ data: data[0] });
+}
+
+/**
+ * Delete:
+ *   @returns HTTP status 204 + the deleted (empty) blog object
+ */
+ async function destroy(req, res, next) {
+  const id = res.locals.foundBlog.blog_id;
+  const data = await service.delete(id);
+  res.status(204).json({ data });
 }
 
 // Export modules
@@ -163,5 +182,7 @@ module.exports = {
   list: [asyncErrorBoundary(list)],
   listFeatured: [asyncErrorBoundary(listFeatured)],
   create: [asyncErrorBoundary(isValidBlog), appendData, create],
-  read: [asyncErrorBoundary(blogExists), read]
+  read: [asyncErrorBoundary(blogExists), read],
+  update: [asyncErrorBoundary(blogExists), asyncErrorBoundary(isValidBlog), update],
+  delete: [asyncErrorBoundary(blogExists), destroy],
 }

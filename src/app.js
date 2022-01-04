@@ -2,7 +2,8 @@
 const express = require('express');
 const cors = require('cors');
 // Import Route handlers
-const blogsRoute = require('./routes/blogsRoute')
+const blogsRoute = require('./routes/blogsRoute');
+const eventsRoute = require('./routes/eventsRoute');
 // Import Error handlers
 const notFound = require('./errors/notFound');
 const errorHandler = require('./errors/errorHandler');
@@ -20,6 +21,7 @@ app.use(express.json());
 
 // Route handlers
 app.use('/blogs', blogsRoute);
+app.use('/events', eventsRoute)
 
 // Eroor handlers
 app.use(notFound);

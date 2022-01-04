@@ -68,6 +68,27 @@ function read(id) {
   return knex("blogs as b").select("*").where({ "b.blog_id": id });
 }
 
+/**
+ * Update:
+ *   @input updated blog object, original blog ID
+ *   @return array of blogs with given ID (after update)
+ */
+function update(updatedBlog, id) {
+  return knex("blogs")
+    .select("*")
+    .where({ blog_id: id })
+    .update(updatedBlog, "*")
+}
+
+/**
+ * Destroy:
+ *   @input blog ID to destroy
+ *   @return array of destroyed blog objects (should be empty)
+ */
+function destroy(id) {
+  return knex("blogs").where({ blog_id: id }).del()
+}
+
 // Export modules
 module.exports = {
   list,
@@ -75,5 +96,7 @@ module.exports = {
   listTopic,
   listFeatured,
   create,
-  read
+  read,
+  update,
+  delete: destroy,
 }
