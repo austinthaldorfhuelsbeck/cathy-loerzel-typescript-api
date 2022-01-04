@@ -13,7 +13,7 @@ const asyncErrorBoundary = require('../errors/asyncErrorBoundary');
  *   Builds a custom error message and returns with 400 status
  */
 async function isValidEvent(req, res, next) {
-  // Acquire blog from body of create/update request
+  // Acquire event from body of create/update request
   const event = { ...req.body }
 
   // Build custom error message
@@ -56,7 +56,7 @@ async function eventExists(req, res, next) {
   }
   next({
     status: 404,
-    message: `event ${req.params.event_id} cannot be found.`,
+    message: `Event ${req.params.event_id} cannot be found.`,
   })
 }
 
