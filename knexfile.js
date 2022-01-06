@@ -37,6 +37,12 @@ module.exports = {
       database: DATABASE_USER,
       password: DATABASE_PASSWORD,
       charset: 'utf8'
+    },
+    migrations: {
+      directory: path.join(__dirname, "src", "db", "migrations")
+    },
+    seeds: {
+      directory: path.join(__dirname, "src", "db", "seeds")
     }
   }
 };
