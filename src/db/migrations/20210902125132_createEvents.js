@@ -4,6 +4,7 @@ exports.up = function (knex) {
     table.string("name")
     table.string("date")
     table.string("content", 10000)
+    table.string("url")
   })
 }
 
