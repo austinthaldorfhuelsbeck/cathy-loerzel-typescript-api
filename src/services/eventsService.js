@@ -13,6 +13,19 @@ function list() {
 }
 
 /**
+ * ListType:
+ *   @input type string
+ *   @return array of all event objects matching
+ *   the type, sorted by event ID
+ */
+function listType(type) {
+  return knex("events as e")
+  .select("*")
+  .where({ "e.type": type})
+  .orderBy("e.event_id")
+}
+
+/**
  * Create:
  *   @input event object
  *   @return created event object from db
@@ -57,6 +70,7 @@ function destroy(id) {
 // Export modules
 module.exports = {
   list,
+  listType,
   create,
   read,
   update,
