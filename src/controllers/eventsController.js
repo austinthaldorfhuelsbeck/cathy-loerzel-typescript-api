@@ -64,10 +64,16 @@ async function eventExists(req, res, next) {
 
 /**
  * List:
- *   @returns array of all event objects
+ *   @returns array of all event objects or as specified by query
  */
-async function list(req, res) {
-  let data = await service.list()
+ async function list(req, res) {
+  const type = req.query.type
+  let data = []
+  if (type) {
+    data = await service.listType(type)
+  } else {
+    data = await service.list()
+  }
   res.json({ data })
 }
 
