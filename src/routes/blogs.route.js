@@ -2,7 +2,7 @@
 const router = require('express').Router();
 
 // Import Middleware for controller and errors
-const controller = require('../controllers/testimonialsController')
+const controller = require('../controllers/blogs.controller')
 const methodNotAllowed = require('../errors/methodNotAllowed');
 
 // Route Definitions
@@ -12,7 +12,11 @@ router
   .post(controller.create)
   .all(methodNotAllowed);
 router
-  .route('/:testimonial_id')
+  .route('/featured')
+  .get(controller.listFeatured)
+  .all(methodNotAllowed);
+router
+  .route('/:blog_id')
   .get(controller.read)
   .put(controller.update)
   .delete(controller.delete)

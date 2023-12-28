@@ -1,4 +1,4 @@
-const events = require("./02-events.json")
+const events = require("./01-events.json")
 
 exports.seed = function (knex) {
   return knex.raw("TRUNCATE TABLE events RESTART IDENTITY CASCADE").then(() => {

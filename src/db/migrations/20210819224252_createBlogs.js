@@ -1,6 +1,6 @@
 exports.up = function (knex) {
   return knex.schema.createTable("blogs", (table) => {
-    table.string("blog_id").primary()
+    table.string("blog_id").primary().notNullable()
     table.integer("order")
     table.string("title")
     table.boolean("featured").default(false)

@@ -1,5 +1,5 @@
 // Import knex object for database connection
-const knex = require('../db/connection');
+const knex = require("../db/connection");
 
 //// !--- SERVICES for HTTP requests for event resources ---! ////
 
@@ -7,9 +7,9 @@ const knex = require('../db/connection');
  * List:
  *   @return array of all event objects,
  *   sorted by event ID
-*/
+ */
 function list() {
-  return knex("events").select("*").orderBy("event_id")
+	return knex("events").select("*").orderBy("event_id");
 }
 
 /**
@@ -19,10 +19,10 @@ function list() {
  *   the type, sorted by event ID
  */
 function listType(type) {
-  return knex("events as e")
-  .select("*")
-  .where({ "e.type": type})
-  .orderBy("e.event_id")
+	return knex("events as e")
+		.select("*")
+		.where({ "e.type": type })
+		.orderBy("e.event_id");
 }
 
 /**
@@ -31,10 +31,10 @@ function listType(type) {
  *   @return created event object from db
  */
 function create(event) {
-  return knex("events")
-    .insert(event)
-    .returning("*")
-    .then((createdEvents) => createdEvents[0])
+	return knex("events")
+		.insert(event)
+		.returning("*")
+		.then((createdEvents) => createdEvents[0]);
 }
 
 /**
@@ -43,7 +43,7 @@ function create(event) {
  *   @return array of events with given ID
  */
 function read(id) {
-  return knex("events as e").select("*").where({ "e.event_id": id });
+	return knex("events as e").select("*").where({ "e.event_id": id });
 }
 
 /**
@@ -52,10 +52,11 @@ function read(id) {
  *   @return array of events with given ID (after update)
  */
 function update(updatedEvent, id) {
-  return knex("events")
-    .select("*")
-    .where({ event_id: id })
-    .update(updatedEvent, "*")
+	return knex("events")
+		.select("*")
+		.where({ event_id: id })
+		.update(updatedEvent, "*")
+		.then((updatedEvents) => updatedEvents[0]);
 }
 
 /**
@@ -64,15 +65,15 @@ function update(updatedEvent, id) {
  *   @return array of destroyed event objects (should be empty)
  */
 function destroy(id) {
-  return knex("events").where({ event_id: id }).del()
+	return knex("events").where({ event_id: id }).del();
 }
 
 // Export modules
 module.exports = {
-  list,
-  listType,
-  create,
-  read,
-  update,
-  delete: destroy,
-}
+	list,
+	listType,
+	create,
+	read,
+	update,
+	delete: destroy,
+};
